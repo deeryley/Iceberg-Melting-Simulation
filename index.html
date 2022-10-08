@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iceberg simulation</title>
+    <link rel="stylesheet" href="main.css" />
+    <script src="index.js"></script>
+
+    <!-- <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Iceland&display=swap"
+      rel="stylesheet" -->
+    <!-- /> -->
+  </head>
+  <body>
+    <div class="topBar">
+      <form>
+        <label for="rows">Number of rows</label>
+        <input
+          type="text"
+          name="rows"
+          id="rows"
+          pattern="/^[7-9]$|^[1-9][0-9]$|^(100)$/"
+          title="Only Numbers 7-100"
+          required
+        />
+
+        <label for="cols">Number of columns</label>
+        <input
+          type="text"
+          name="cols"
+          id="cols"
+          pattern="/^[7-9]$|^[1-9][0-9]$|^(100)$/"
+          title="Only Numbers 7-100"
+          required
+        />
+
+        <button class="createTable" onclick="genrateWater()" type="button">
+          Create new table M x N
+        </button>
+      </form>
+
+      <button type="button" onclick="resetTable()">Reset Table</button>
+    </div>
+    <div id="simulationButtons" class="simulationButtons">
+      <button type="button">Start Simulation</button>
+      <button type="button">Next Step</button>
+      <button type="button">Cancel Simulation</button>
+    </div>
+
+    <div class="container"></div>
+  </body>
+</html>
