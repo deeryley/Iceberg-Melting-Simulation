@@ -2,35 +2,24 @@
 
 var container = document.getElementsByClassName("container");
 var table = document.getElementsByTagName("table");
-var rows, cols, grid;
-
-const operations = [
-  [0, 1],
-  [0, -1],
-  [1, 0],
-  [-1, 0],
-];
+var rows, cols, grid, started;
 
 function genrateWater() {
   grid = createGrid();
   createHTMLFromGrid(grid);
-  //checkColor();
+  checkColor();
   changeColor();
 }
 
-//loop through the table and check if the cell is 1 or 0
-function checkColor() {
-  let cells = table[0].getElementsByTagName("td");
-  for (let i = 0; i < cells.length; i++) {
-    if (cells[i].value == "0") {
-      cells[i].classList.add("isWater");
-    } else {
-      cells[i].classList.add("isIce");
-    }
-  }
+function startSimulation() {
+  nextStep();
+  started = setInterval(nextStep, 1000);
 }
 
-// create a array with the input
+function cancelSimulation() {
+  clearInterval(started);
+}
+
 function createGrid(rows, cols) {
   rows = parseInt(document.getElementById("rows").value);
   cols = parseInt(document.getElementById("cols").value);
@@ -52,8 +41,6 @@ function createHTMLFromGrid(grid) {
     let row = document.createElement("tr");
     for (let j = 0; j < grid[i].length; j++) {
       let cell = document.createElement("td");
-      //add event listener to cell
-      //cell.addEventListener("click", () => console.log(grid));
       cell.value = grid[i][j];
       row.appendChild(cell);
     }
@@ -62,45 +49,38 @@ function createHTMLFromGrid(grid) {
   container[0].appendChild(table);
 }
 
-//reset the table and grid
-function resetTable() {
-  container[0].removeChild(table[0]);
-}
-
-//when click on table cell  numbers change div class from isWater to isIce
+//when click on table cell numbers change div class from isWater to isIce and update the grid array
 function changeColor() {
-  checkColor();
   let cells = table[0].getElementsByTagName("td");
+
   for (let i = 0; i < cells.length; i++) {
     cells[i].addEventListener("click", function (e) {
-      //console.log(e.target.value);
       if (e.target.value == "0") {
         e.target.classList.remove("isWater");
         e.target.classList.add("isIce");
         e.target.value = "1";
         grid[e.target.parentNode.rowIndex][e.target.cellIndex] = 1;
-        //console.log(grid);
       } else if (e.target.value == "1") {
         e.target.classList.remove("isIce");
         e.target.classList.add("isWater");
-        e.target.value = "1";
+        e.target.value = "0";
         grid[e.target.parentNode.rowIndex][e.target.cellIndex] = 0;
-        //console.log(grid);
       }
     });
   }
 }
 
 function getNeighborsCount(i, j) {
-  let allPosibleIndexes = [
+  let allPosibleValues = [];
+
+  let neighborPositions = [
     [i - 1, j], // top
     [i, j + 1], // right
     [i + 1, j], // bottom
     [i, j - 1], // left
   ];
 
-  let allPosibleValues = [];
-  allPosibleIndexes.forEach(([i, j]) => {
+  neighborPositions.forEach(([i, j]) => {
     try {
       allPosibleValues.push(grid[i][j]);
     } catch (err) {}
@@ -108,12 +88,11 @@ function getNeighborsCount(i, j) {
 
   let valuesArr = allPosibleValues.filter((v) => v != undefined);
   let count = valuesArr.reduce((a, b) => a + b, 0);
-  //console.log(valuesArr);
 
   return count;
 }
 
-function startSimulation() {
+let nextStep = function () {
   // if the cell has more than 3 neighbors it will be ice
   // if the cell has 2 or less neighbors it will be water
   rows = document.getElementById("rows").value;
@@ -128,10 +107,14 @@ function startSimulation() {
       console.log(`${getNeighborsCount(i, j)} neighbors for ${i}, ${j}`);
 
       if (getNeighborsCount(i, j) > 3) {
-        //console.log(getNeighborsCount(i, j));
         newGrid[i][j] = 1;
+        //change the color of the cell
+        table[0].rows[i].cells[j].classList.remove("isWater");
+        table[0].rows[i].cells[j].classList.add("isIce");
       } else if (getNeighborsCount(i, j) < 3) {
         newGrid[i][j] = 0;
+        table[0].rows[i].cells[j].classList.remove("isIce");
+        table[0].rows[i].cells[j].classList.add("isWater");
       } else {
         newGrid[i][j] = grid[i][j];
       }
@@ -139,6 +122,19 @@ function startSimulation() {
   }
   grid = newGrid;
   console.log(grid);
-  //apply changes to the table
-  checkColor();
+};
+
+function checkColor() {
+  let cells = table[0].getElementsByTagName("td");
+  for (let i = 0; i < cells.length; i++) {
+    if (cells[i].value == "0") {
+      cells[i].classList.add("isWater");
+    } else {
+      cells[i].classList.add("isIce");
+    }
+  }
+}
+
+function resetTable() {
+  container[0].removeChild(table[0]);
 }
